@@ -65,32 +65,32 @@ export default function SkillsPage() {
 
   return (
     <main className="p-8 max-w-md mx-auto mt-10">
-      <Link href="/" className="text-blue-600 hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
-      <h1 className="text-3xl font-bold mb-6">⚔ Skills</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
+      <h1 className="text-3xl font-bold mb-6 text-[var(--gold)]">⚔ Skills</h1>
+      {error && <p className="text-[var(--red)] mb-4">{error}</p>}
 
       {skills.map((skill) => (
-        <div key={skill.id} className="border p-4 rounded-lg mb-4">
+        <div key={skill.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-lg mb-4">
           <div className="flex justify-between items-center">
             <div>
-              <p className="font-bold text-lg">{skill.name}</p>
-              <p className="text-gray-500 text-sm">{skill.category}</p>
+              <p className="font-bold text-lg text-[var(--foreground)]">{skill.name}</p>
+              <p className="text-[var(--gray)] text-sm">{skill.category}</p>
             </div>
             <div className="text-right">
-              <p className="font-bold">Level {skill.level}</p>
-              <p className="text-sm text-gray-500">{skill.xp} / {skill.level * 100} XP</p>
+              <p className="font-bold text-[var(--gold)]">Level {skill.level}</p>
+              <p className="text-sm text-[var(--gray)]">{skill.xp} / {skill.level * 100} XP</p>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-2 mb-3">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(skill.xp % 100)}%` }}></div>
+          <div className="w-full bg-[var(--background)] rounded-full h-2 mt-2 mb-3 border border-[var(--card-border)]">
+            <div className="bg-[var(--xp-bar)] h-2 rounded-full" style={{ width: `${(skill.xp % 100)}%` }}></div>
           </div>
           <ul className="flex flex-col gap-2">
             {tasks.filter((t) => t.skill_id === skill.id).map((task) => (
-              <li key={task.id} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+              <li key={task.id} className="flex justify-between items-center bg-[var(--background)] p-2 rounded">
                 <span>{task.title}</span>
                 <button
                   onClick={() => handleComplete(task)}
-                  className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                  className="bg-[var(--green)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--green-light)]"
                 >
                   Fullført +{task.xp_reward}XP
                 </button>
@@ -100,26 +100,26 @@ export default function SkillsPage() {
         </div>
       ))}
 
-      <h2 className="text-xl font-bold mt-8 mb-3">Legg til skill</h2>
+      <h2 className="text-xl font-bold mt-8 mb-3 text-[var(--gold)]">Legg til skill</h2>
       <form onSubmit={handleAddSkill} className="flex flex-col gap-3 mb-8">
         <input
           type="text"
           placeholder="Navn på skill"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border p-2 rounded text-black"
+          className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]"
         />
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className="border p-2 rounded text-black">
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]">
           <option value="hobby">Hobby</option>
           <option value="skole">Skole</option>
           <option value="trening">Trening</option>
         </select>
-        <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Legg til skill</button>
+        <button type="submit" className="bg-[var(--gold-dark)] text-white p-2 rounded hover:bg-[var(--gold)]">Legg til skill</button>
       </form>
 
-      <h2 className="text-xl font-bold mb-3">Legg til oppgave</h2>
+      <h2 className="text-xl font-bold mb-3 text-[var(--gold)]">Legg til oppgave</h2>
       <form onSubmit={handleAddTask} className="flex flex-col gap-3">
-        <select value={selectedSkill} onChange={(e) => setSelectedSkill(e.target.value)} className="border p-2 rounded text-black">
+        <select value={selectedSkill} onChange={(e) => setSelectedSkill(e.target.value)} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]">
           <option value="">Velg skill</option>
           {skills.map((skill) => (
             <option key={skill.id} value={skill.id}>{skill.name}</option>
@@ -130,9 +130,9 @@ export default function SkillsPage() {
           placeholder="Oppgave (f.eks. Lag middag)"
           value={taskTitle}
           onChange={(e) => setTaskTitle(e.target.value)}
-          className="border p-2 rounded text-black"
+          className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]"
         />
-        <button type="submit" className="bg-green-600 text-white p-2 rounded hover:bg-green-700">Legg til oppgave</button>
+        <button type="submit" className="bg-[var(--green)] text-white p-2 rounded hover:bg-[var(--green-light)]">Legg til oppgave</button>
       </form>
     </main>
   );
