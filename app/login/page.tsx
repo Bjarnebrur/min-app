@@ -33,32 +33,32 @@ export default function LoginPage() {
 
   return (
     <main className="p-8 max-w-sm mx-auto mt-20">
-      <h1 className="text-3xl font-bold mb-6">Logg inn</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <h1 className="text-3xl font-bold mb-6 text-[var(--gold)]">Logg inn</h1>
+      {error && <p className="text-[var(--red)] mb-4">{error}</p>}
       <form className="flex flex-col gap-4">
         <input
           type="email"
           placeholder="E-post"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 rounded text-black"
+          className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]"
         />
         <input
           type="password"
           placeholder="Passord"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 rounded text-black"
+          className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]"
         />
         <button
           onClick={handleLogin}
-          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+          className="bg-[var(--gold-dark)] text-white p-2 rounded hover:bg-[var(--gold)]"
         >
           Logg inn
         </button>
         <button
           onClick={handleSignUp}
-          className="bg-gray-600 text-white p-2 rounded hover:bg-gray-700"
+          className="bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] p-2 rounded hover:border-[var(--gold)]"
         >
           Opprett konto
         </button>

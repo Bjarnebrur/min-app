@@ -26,7 +26,6 @@ export default function DailysPage() {
       .eq("completed_date", today);
     if (completions) setCompletedIds(completions.map((c) => c.daily_id));
 
-    // Beregn streak
     let currentStreak = 0;
     let checkDate = new Date();
     while (true) {
@@ -65,28 +64,32 @@ export default function DailysPage() {
 
   return (
     <main className="p-8 max-w-md mx-auto mt-10">
-      <Link href="/" className="text-blue-600 hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
-      <h1 className="text-3xl font-bold mb-2">☀ Dailys</h1>
-      <p className="text-gray-500 mb-6">Streak: {streak} dager på rad</p>
+      <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
+      <h1 className="text-3xl font-bold mb-2 text-[var(--gold)]">☀ Dailys</h1>
+      <p className="text-[var(--yellow)] mb-6">🔥 Streak: {streak} dager på rad</p>
 
       <ul className="flex flex-col gap-3">
         {dailys.map((daily) => {
           const done = completedIds.includes(daily.id);
           return (
-            <li key={daily.id} className={`border p-4 rounded-lg flex justify-between items-center ${done ? "bg-green-50 border-green-300" : ""}`}>
+            <li key={daily.id} className={`border p-4 rounded-lg flex justify-between items-center ${
+              done
+                ? "bg-[var(--green)] border-[var(--green-light)]"
+                : "bg-[var(--card-bg)] border-[var(--card-border)]"
+            }`}>
               <div>
-                <p className={`font-bold ${done ? "line-through text-green-700" : ""}`}>{daily.title}</p>
-                <p className="text-gray-500 text-sm">{daily.description}</p>
+                <p className={`font-bold ${done ? "line-through text-green-200" : "text-[var(--foreground)]"}`}>{daily.title}</p>
+                <p className={`text-sm ${done ? "text-green-300" : "text-[var(--gray)]"}`}>{daily.description}</p>
               </div>
               {!done && (
                 <button
                   onClick={() => handleComplete(daily.id)}
-                  className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+                  className="bg-[var(--green)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--green-light)]"
                 >
                   Fullført
                 </button>
               )}
-              {done && <span className="text-green-600 font-bold">✓</span>}
+              {done && <span className="text-green-200 font-bold text-xl">✓</span>}
             </li>
           );
         })}
