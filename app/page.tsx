@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import LogoutButton from "@/app/components/LogoutButton";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -22,6 +23,7 @@ export default async function Home() {
         <h1 className="text-4xl font-bold">{profile.character_name}</h1>
         <p className="text-gray-500">@{profile.username}</p>
         <p className="mt-2 text-lg">Level {profile.level} — {profile.xp} XP</p>
+        <LogoutButton />
       </div>
 
       <div className="flex flex-col gap-4">

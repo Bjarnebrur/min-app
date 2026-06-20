@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function SkolePage() {
   const [items, setItems] = useState<any[]>([]);
@@ -78,6 +79,7 @@ export default function SkolePage() {
 
   return (
     <main className="p-8 max-w-lg mx-auto mt-10">
+      <Link href="/" className="text-blue-600 hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
       <h1 className="text-3xl font-bold mb-6">📚 Skole</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 

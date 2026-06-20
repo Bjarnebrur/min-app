@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function DailysPage() {
   const [dailys, setDailys] = useState<any[]>([]);
@@ -64,6 +65,7 @@ export default function DailysPage() {
 
   return (
     <main className="p-8 max-w-md mx-auto mt-10">
+      <Link href="/" className="text-blue-600 hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
       <h1 className="text-3xl font-bold mb-2">☀ Dailys</h1>
       <p className="text-gray-500 mb-6">Streak: {streak} dager på rad</p>
 

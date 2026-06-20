@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SkillsPage() {
   const [name, setName] = useState("");
@@ -64,6 +65,7 @@ export default function SkillsPage() {
 
   return (
     <main className="p-8 max-w-md mx-auto mt-10">
+      <Link href="/" className="text-blue-600 hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
       <h1 className="text-3xl font-bold mb-6">⚔ Skills</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
