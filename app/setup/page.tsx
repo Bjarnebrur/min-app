@@ -4,15 +4,36 @@ import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const STATS = ["Strength", "Intellect", "Agility", "Stamina", "Social", "Creativity", "Moral"];
+
 export default function SetupPage() {
+  const [step, setStep] = useState(1);
   const [username, setUsername] = useState("");
   const [characterName, setCharacterName] = useState("");
+  const [age, setAge] = useState(18);
+  const [stats, setStats] = useState<Record<string, number>>({
+    Strength: 0, Intellect: 0, Agility: 0, Stamina: 0, Social: 0, Creativity: 0, Moral: 0,
+  });
   const [error, setError] = useState("");
   const router = useRouter();
   const supabase = createClient();
 
+  const pointsUsed = Object.values(stats).reduce((a, b) => a + b, 0);
+  const pointsLeft = age - pointsUsed;
+
+  function handleStatChange(stat: string, delta: number) {
+    const newVal = stats[stat] + delta;
+    if (newVal < 0) return;
+    if (delta > 0 && pointsLeft <= 0) return;
+    setStats({ ...stats, [stat]: newVal });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (pointsLeft > 0) {
+      setError(`Du har ${pointsLeft} poeng igjen å fordele!`);
+      return;
+    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -20,6 +41,14 @@ export default function SetupPage() {
       id: user.id,
       username,
       character_name: characterName,
+      age,
+      strength: stats.Strength,
+      intellect: stats.Intellect,
+      agility: stats.Agility,
+      stamina: stats.Stamina,
+      social: stats.Social,
+      creativity: stats.Creativity,
+      moral: stats.Moral,
     });
 
     if (error) {
@@ -29,32 +58,89 @@ export default function SetupPage() {
     }
   }
 
+  if (step === 1) {
+    return (
+      <main className="p-8 max-w-sm mx-auto mt-20">
+        <h1 className="text-3xl font-bold mb-6 text-[var(--gold)]">Lag din karakter</h1>
+        {error && <p className="text-[var(--red)] mb-4">{error}</p>}
+        <form onSubmit={(e) => { e.preventDefault(); if (!username.trim() || !characterName.trim()) { setError("Fyll ut alle felt"); return; } setError(""); setStep(2); }} className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Brukernavn"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]"
+          />
+          <input
+            type="text"
+            placeholder="Karakternavn"
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+            className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)]"
+          />
+          <button type="submit" className="bg-[var(--gold-dark)] text-white p-2 rounded hover:bg-[var(--gold)]">
+            Neste →
+          </button>
+        </form>
+      </main>
+    );
+  }
+
   return (
-    <main className="p-8 max-w-sm mx-auto mt-20">
-      <h1 className="text-3xl font-bold mb-6">Lag din karakter</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="text"
-          placeholder="Brukernavn"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 rounded text-black"
-        />
-        <input
-          type="text"
-          placeholder="Karakternavn"
-          value={characterName}
-          onChange={(e) => setCharacterName(e.target.value)}
-          className="border p-2 rounded text-black"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-        >
+    <main className="p-8 max-w-md mx-auto mt-10">
+      <h1 className="text-3xl font-bold mb-2 text-[var(--gold)]">Fordel poeng</h1>
+      <p className="text-[var(--gray)] mb-2">Din alder bestemmer hvor mange poeng du har.</p>
+
+      <div className="flex items-center gap-3 mb-6">
+        <label className="text-[var(--foreground)] font-bold">Alder:</label>
+        <button onClick={() => setAge(Math.max(1, age - 1))} className="bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] w-8 h-8 rounded hover:border-[var(--gold)]">-</button>
+        <span className="text-2xl font-bold text-[var(--gold)] w-10 text-center">{age}</span>
+        <button onClick={() => setAge(age + 1)} className="bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] w-8 h-8 rounded hover:border-[var(--gold)]">+</button>
+      </div>
+
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-lg mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <p className="font-bold text-[var(--foreground)]">Poeng igjen:</p>
+          <p className={`text-2xl font-bold ${pointsLeft > 0 ? "text-[var(--gold)]" : "text-[var(--green-light)]"}`}>{pointsLeft}</p>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {STATS.map((stat) => (
+            <div key={stat} className="flex items-center justify-between">
+              <span className="text-[var(--foreground)] w-24 text-sm">{stat}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleStatChange(stat, -1)}
+                  className="bg-[var(--background)] border border-[var(--card-border)] text-[var(--foreground)] w-7 h-7 rounded text-sm hover:border-[var(--red)]"
+                >
+                  -
+                </button>
+                <span className="text-[var(--gold)] font-bold w-8 text-center">{stats[stat]}</span>
+                <button
+                  onClick={() => handleStatChange(stat, 1)}
+                  className="bg-[var(--background)] border border-[var(--card-border)] text-[var(--foreground)] w-7 h-7 rounded text-sm hover:border-[var(--gold)]"
+                >
+                  +
+                </button>
+              </div>
+              <div className="w-24 bg-[var(--background)] rounded-full h-2 border border-[var(--card-border)]">
+                <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${Math.min((stats[stat] / age) * 100, 100)}%` }}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {error && <p className="text-[var(--red)] mb-4">{error}</p>}
+
+      <div className="flex gap-3">
+        <button onClick={() => setStep(1)} className="bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--foreground)] p-2 rounded flex-1 hover:border-[var(--gold)]">
+          ← Tilbake
+        </button>
+        <button onClick={handleSubmit} className="bg-[var(--gold-dark)] text-white p-2 rounded flex-1 hover:bg-[var(--gold)]">
           Opprett karakter
         </button>
-      </form>
+      </div>
     </main>
   );
 }
