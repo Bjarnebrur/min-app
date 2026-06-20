@@ -14,7 +14,7 @@ export default function SkolePage() {
   async function fetchData() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { data } = await supabase.from("school_items").select().eq("user_id", user.id);
+    const { data } = await supabase.from("school_items").select().eq("user_id", user.id).order("id", { ascending: true });
     if (data) setItems(data);
     const { data: profileData } = await supabase.from("profiles").select().eq("id", user.id).single();
     if (profileData) setProfile(profileData);

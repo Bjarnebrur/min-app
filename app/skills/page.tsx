@@ -88,8 +88,8 @@ export default function SkillsPage() {
 
         {/* Midten - skills-liste med scroll */}
         <div className="flex-1 overflow-y-auto pr-2">
-          {skills.map((skill) => (
-            <div key={skill.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-3 rounded-lg mb-3 relative group">
+          {skills.map((skill, index) => (
+            <div key={skill.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] border-l-4 border-l-[var(--gold-dark)] p-3 rounded-lg mb-3 relative group">
               <button
                 onClick={() => handleDeleteSkill(skill.id)}
                 className="absolute top-2 right-2 text-[var(--red)] opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 text-sm"
@@ -111,7 +111,7 @@ export default function SkillsPage() {
                 {(() => {
                   const skillTasks = tasks.filter((t) => t.skill_id === skill.id);
                   const isExpanded = expandedTasks === skill.id;
-                  const visible = isExpanded ? skillTasks : skillTasks.slice(0, 2);
+                  const visible = isExpanded ? skillTasks : [];
                   return (
                     <>
                       {visible.map((task) => (
@@ -125,12 +125,12 @@ export default function SkillsPage() {
                           </button>
                         </li>
                       ))}
-                      {skillTasks.length > 2 && (
+                      {skillTasks.length > 0 && (
                         <button
                           onClick={() => setExpandedTasks(isExpanded ? null : skill.id)}
-                          className="text-[var(--gold)] text-xs mt-1 hover:underline"
+                          className="w-full text-center text-[var(--gold)] text-xs mt-2 py-1.5 rounded bg-[var(--background)] border border-[var(--card-border)] hover:border-[var(--gold)] transition-colors"
                         >
-                          {isExpanded ? "Vis færre" : `Vis alle (${skillTasks.length})`}
+                          {isExpanded ? "Skjul oppgaver ▲" : `Vis oppgaver (${skillTasks.length}) ▼`}
                         </button>
                       )}
                     </>
