@@ -20,7 +20,7 @@ export default async function Home() {
   return (
     <main className="p-8 max-w-lg mx-auto">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-[var(--gold)]">{profile.character_name}</h1>
+        <Link href="/karakter" className="text-4xl font-bold text-[var(--gold)] hover:underline">{profile.character_name}</Link>
         <p className="text-[var(--gray)]">@{profile.username}</p>
         <div className="mt-3">
           <p className="text-lg font-bold">Level {profile.level}</p>
