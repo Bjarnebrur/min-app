@@ -10,6 +10,8 @@ export default function SkillsPage() {
   const [category, setCategory] = useState("hobby");
   const [skills, setSkills] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
+  const [completedTasks, setCompletedTasks] = useState<any[]>([]);
+  const [openHistory, setOpenHistory] = useState<number | null>(null);
   const [selectedSkill, setSelectedSkill] = useState("");
   const [taskTitle, setTaskTitle] = useState("");
   const [error, setError] = useState("");
@@ -23,6 +25,8 @@ export default function SkillsPage() {
     if (skillsData) setSkills(skillsData);
     const { data: tasksData } = await supabase.from("tasks").select().eq("user_id", user.id).eq("done", false);
     if (tasksData) setTasks(tasksData);
+    const { data: completedData } = await supabase.from("tasks").select().eq("user_id", user.id).eq("done", true).order("completed_at", { ascending: false });
+    if (completedData) setCompletedTasks(completedData);
   }
 
   useEffect(() => { fetchData(); }, []);
@@ -63,15 +67,28 @@ export default function SkillsPage() {
     fetchData();
   }
 
+  async function handleDeleteSkill(skillId: number) {
+    await supabase.from("tasks").delete().eq("skill_id", skillId);
+    await supabase.from("skills").delete().eq("id", skillId);
+    fetchData();
+  }
+
   return (
     <main className="p-8 max-w-md mx-auto mt-10">
-      <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
-      <h1 className="text-3xl font-bold mb-6 text-[var(--gold)]">⚔ Skills</h1>
+      <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-2 inline-block">← Tilbake</Link>
+      <h1 className="text-3xl font-bold text-[var(--gold)] mb-6">⚔ Skills</h1>
       {error && <p className="text-[var(--red)] mb-4">{error}</p>}
 
       {skills.map((skill) => (
-        <div key={skill.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-lg mb-4">
-          <div className="flex justify-between items-center">
+        <div key={skill.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-lg mb-4 relative group">
+          <button
+            onClick={() => handleDeleteSkill(skill.id)}
+            className="absolute top-2 right-2 text-[var(--red)] opacity-0 group-hover:opacity-100 transition-opacity hover:scale-110 text-sm"
+            title="Slett skill"
+          >
+            🗑️
+          </button>
+          <div className="flex justify-between items-center mb-1 pr-6">
             <div>
               <p className="font-bold text-lg text-[var(--foreground)]">{skill.name}</p>
               <p className="text-[var(--gray)] text-sm">{skill.category}</p>
@@ -97,6 +114,27 @@ export default function SkillsPage() {
               </li>
             ))}
           </ul>
+          <button
+            onClick={() => setOpenHistory(openHistory === skill.id ? null : skill.id)}
+            className="text-[var(--gray)] text-xs mt-3 hover:text-[var(--gold)]"
+          >
+            📜 Historikk {openHistory === skill.id ? "▼" : "▶"}
+          </button>
+          {openHistory === skill.id && (
+            <div className="mt-2 border-t border-[var(--card-border)] pt-2">
+              {completedTasks.filter((t) => t.skill_id === skill.id).length === 0 && (
+                <p className="text-[var(--gray)] text-xs">Ingen fullførte oppgaver ennå.</p>
+              )}
+              <ul className="flex flex-col gap-1 max-h-40 overflow-y-auto">
+                {completedTasks.filter((t) => t.skill_id === skill.id).map((task) => (
+                  <li key={task.id} className="flex justify-between items-center bg-[var(--background)] p-2 rounded text-sm">
+                    <span className="text-[var(--gray)] line-through">{task.title}</span>
+                    <span className="text-[var(--green-light)] text-xs">+{task.xp_reward}XP</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       ))}
 
