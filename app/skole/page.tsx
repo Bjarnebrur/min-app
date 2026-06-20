@@ -7,6 +7,7 @@ import Link from "next/link";
 export default function SkolePage() {
   const [items, setItems] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [error, setError] = useState("");
   const supabase = createClient();
@@ -48,6 +49,7 @@ export default function SkolePage() {
   }
 
   async function handleAddItem(categoryId: number, title: string) {
+    if (!title.trim()) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("school_items").insert({
@@ -60,6 +62,7 @@ export default function SkolePage() {
   }
 
   async function handleAddSubItem(moduleId: number, title: string) {
+    if (!title.trim()) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("school_items").insert({
@@ -100,10 +103,42 @@ export default function SkolePage() {
     fetchData();
   }
 
-  const subjects = items.filter((i) => i.type === "subject");
+  async function handleDeleteItem(itemId: number) {
+    const children = items.filter((i) => i.parent_id === itemId);
+    for (const child of children) {
+      await supabase.from("school_items").delete().eq("id", child.id);
+    }
+    await supabase.from("school_items").delete().eq("id", itemId);
+    fetchData();
+  }
+
+  async function handleCompleteSubject(subjectId: number) {
+    await supabase.from("school_items").update({ status: "completed" }).eq("id", subjectId);
+    fetchData();
+  }
+
+  async function handleDeleteSubject(subjectId: number) {
+    const children = items.filter((i) => i.parent_id === subjectId);
+    for (const child of children) {
+      const grandchildren = items.filter((i) => i.parent_id === child.id);
+      for (const gc of grandchildren) {
+        const greatgc = items.filter((i) => i.parent_id === gc.id);
+        for (const ggc of greatgc) {
+          await supabase.from("school_items").delete().eq("id", ggc.id);
+        }
+        await supabase.from("school_items").delete().eq("id", gc.id);
+      }
+      await supabase.from("school_items").delete().eq("id", child.id);
+    }
+    await supabase.from("school_items").delete().eq("id", subjectId);
+    fetchData();
+  }
+
+  const activeSubjects = items.filter((i) => i.type === "subject" && i.status !== "completed");
+  const completedSubjects = items.filter((i) => i.type === "subject" && i.status === "completed");
 
   return (
-    <main className="p-8 max-w-lg mx-auto mt-10">
+    <main className="p-6">
       <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-[var(--gold)]">📚 Skole</h1>
@@ -119,59 +154,106 @@ export default function SkolePage() {
       </div>
       {error && <p className="text-[var(--red)] mb-4">{error}</p>}
 
-      {subjects.map((subject) => {
-        const categories = items.filter((i) => i.type === "category" && i.parent_id === subject.id);
-        return (
-          <div key={subject.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-lg mb-4">
-            <h2 className="text-xl font-bold mb-3 text-[var(--foreground)]">{subject.title}</h2>
-
-            {categories.length === 0 && (
-              <div className="flex gap-2 mb-3">
-                <button onClick={() => handleAddCategory(subject.id, "Pensum")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Pensum</button>
-                <button onClick={() => handleAddCategory(subject.id, "Oppgaver")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Oppgaver</button>
-              </div>
+      <div className="flex gap-6">
+        {/* Venstre side - fullførte emner */}
+        <div className="w-52 flex-shrink-0 absolute left-6">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] p-3 rounded-lg">
+            <h2 className="font-bold text-sm text-[var(--gold)] mb-3">Fullførte emner</h2>
+            {completedSubjects.length === 0 && (
+              <p className="text-[var(--gray)] text-xs">Ingen fullførte emner ennå.</p>
             )}
-
-            {categories.map((cat) => {
-              const catItems = items.filter((i) => i.type === "item" && i.parent_id === cat.id);
-              const subItems = items.filter((i) => i.type === "subitem");
-              return (
-                <CategorySection
-                  key={cat.id}
-                  category={cat}
-                  items={catItems}
-                  subItems={subItems}
-                  allItems={items}
-                  onAddItem={handleAddItem}
-                  onComplete={handleComplete}
-                  onSetFailed={handleSetFailed}
-                  onRetry={handleRetry}
-                  onSetNext={handleSetNext}
-                  onAddSubItem={handleAddSubItem}
-                  isPensum={cat.title === "Pensum"}
-                />
-              );
-            })}
+            <ul className="flex flex-col gap-2">
+              {completedSubjects.map((subject) => (
+                <li key={subject.id} className="bg-[var(--green)] p-2 rounded flex justify-between items-center group">
+                  <span className="font-bold text-green-200 text-sm">{subject.title}</span>
+                  <button
+                    onClick={() => handleDeleteSubject(subject.id)}
+                    className="text-red-300 opacity-0 group-hover:opacity-100 transition-opacity text-xs hover:scale-110"
+                    title="Slett emne"
+                  >
+                    🗑️
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-        );
-      })}
+        </div>
 
-      <h2 className="text-xl font-bold mt-8 mb-3 text-[var(--gold)]">Legg til fag</h2>
-      <form onSubmit={handleAddSubject} className="flex gap-3">
-        <input
-          type="text"
-          placeholder="Fagnavn (f.eks. Programmering)"
-          value={subjectName}
-          onChange={(e) => setSubjectName(e.target.value)}
-          className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)] flex-1"
-        />
-        <button type="submit" className="bg-[var(--gold-dark)] text-white px-4 py-2 rounded hover:bg-[var(--gold)]">Legg til</button>
-      </form>
+        {/* Høyre side - aktive emner */}
+        <div className="max-w-xl mx-auto flex-1">
+          {activeSubjects.map((subject) => {
+            const categories = items.filter((i) => i.type === "category" && i.parent_id === subject.id);
+            return (
+              <div key={subject.id} className="bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-lg mb-4 relative group">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-xl font-bold text-[var(--foreground)]">{subject.title}</h2>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => handleCompleteSubject(subject.id)}
+                      className="text-[var(--green-light)] text-xs border border-[var(--green)] px-2 py-1 rounded hover:bg-[var(--green)] hover:text-white"
+                    >
+                      Fullfør ✓
+                    </button>
+                    <button
+                      onClick={() => handleDeleteSubject(subject.id)}
+                      className="text-[var(--red)] text-xs hover:scale-110"
+                      title="Slett emne"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+
+                {categories.length === 0 && (
+                  <div className="flex gap-2 mb-3">
+                    <button onClick={() => handleAddCategory(subject.id, "Pensum")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Pensum</button>
+                    <button onClick={() => handleAddCategory(subject.id, "Oppgaver")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Oppgaver</button>
+                  </div>
+                )}
+
+                {categories.map((cat) => {
+                  const catItems = items.filter((i) => i.type === "item" && i.parent_id === cat.id);
+                  const subItems = items.filter((i) => i.type === "subitem");
+                  return (
+                    <CategorySection
+                      key={cat.id}
+                      category={cat}
+                      items={catItems}
+                      subItems={subItems}
+                      allItems={items}
+                      onAddItem={handleAddItem}
+                      onComplete={handleComplete}
+                      onSetFailed={handleSetFailed}
+                      onRetry={handleRetry}
+                      onSetNext={handleSetNext}
+                      onAddSubItem={handleAddSubItem}
+                      onDeleteItem={handleDeleteItem}
+                      isPensum={cat.title === "Pensum"}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
+
+          <h2 className="text-xl font-bold mt-8 mb-3 text-[var(--gold)]">Legg til fag</h2>
+          <form onSubmit={handleAddSubject} className="flex gap-3">
+            <input
+              type="text"
+              placeholder="Fagnavn (f.eks. Programmering)"
+              value={subjectName}
+              onChange={(e) => setSubjectName(e.target.value)}
+              className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)] flex-1"
+            />
+            <button type="submit" className="bg-[var(--gold-dark)] text-white px-4 py-2 rounded hover:bg-[var(--gold)]">Legg til</button>
+          </form>
+        </div>
+      </div>
     </main>
   );
 }
 
-function CategorySection({ category, items, allItems, onAddItem, onComplete, onSetFailed, onRetry, onSetNext, onAddSubItem, isPensum }: any) {
+function CategorySection({ category, items, allItems, onAddItem, onComplete, onSetFailed, onRetry, onSetNext, onAddSubItem, onDeleteItem, isPensum }: any) {
   const [open, setOpen] = useState(false);
   const [newItem, setNewItem] = useState("");
   const [openModule, setOpenModule] = useState<number | null>(null);
@@ -216,6 +298,7 @@ function CategorySection({ category, items, allItems, onAddItem, onComplete, onS
                       {item.status === "failed" && (
                         <button onClick={() => onRetry(item.id)} className="bg-[var(--gold-dark)] text-white px-2 py-1 rounded text-xs hover:bg-[var(--gold)]">Prøv igjen</button>
                       )}
+                      <button onClick={() => onDeleteItem(item.id)} className="text-[var(--red)] text-xs hover:scale-110" title="Slett">🗑️</button>
                     </div>
                   </div>
                   {isPensum && openModule === item.id && (
@@ -242,6 +325,7 @@ function CategorySection({ category, items, allItems, onAddItem, onComplete, onS
                               {si.status === "failed" && (
                                 <button onClick={() => onRetry(si.id)} className="bg-[var(--gold-dark)] text-white px-2 py-1 rounded text-xs hover:bg-[var(--gold)]">Prøv igjen</button>
                               )}
+                              <button onClick={() => onDeleteItem(si.id)} className="text-[var(--red)] text-xs hover:scale-110" title="Slett">🗑️</button>
                             </div>
                           </li>
                         ))}
