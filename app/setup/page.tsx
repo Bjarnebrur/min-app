@@ -3,9 +3,9 @@
 import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import LpcAvatar, { SKIN_OPTIONS, HAIR_OPTIONS, CLOTHES_OPTIONS } from "@/app/components/LpcAvatar";
+import LpcAvatar, { SKIN_OPTIONS, HAIR_OPTIONS, TORSO_OPTIONS } from "@/app/components/LpcAvatar";
 
-const STATS = ["Strength", "Intellect", "Agility", "Stamina", "Social", "Creativity", "Moral"];
+const STATS = ["Strength", "Intellect", "Agility", "Stamina", "Social", "Creativity", "Discipline"];
 
 export default function SetupPage() {
   const [step, setStep] = useState(1);
@@ -13,11 +13,11 @@ export default function SetupPage() {
   const [characterName, setCharacterName] = useState("");
   const [age, setAge] = useState(18);
   const [stats, setStats] = useState<Record<string, number>>({
-    Strength: 0, Intellect: 0, Agility: 0, Stamina: 0, Social: 0, Creativity: 0, Moral: 0,
+    Strength: 0, Intellect: 0, Agility: 0, Stamina: 0, Social: 0, Creativity: 0, Discipline: 0,
   });
   const [skinId, setSkinId] = useState(SKIN_OPTIONS[0].id);
   const [hairId, setHairId] = useState(HAIR_OPTIONS[0].id);
-  const [clothesId, setClothesId] = useState(CLOTHES_OPTIONS[0].id);
+  const [clothesId, setClothesId] = useState(TORSO_OPTIONS[0].id);
   const [error, setError] = useState("");
   const router = useRouter();
   const supabase = createClient();
@@ -47,7 +47,7 @@ export default function SetupPage() {
       stamina: stats.Stamina,
       social: stats.Social,
       creativity: stats.Creativity,
-      moral: stats.Moral,
+      discipline: stats.Discipline,
       skin_color: skinId,
       hair_color: hairId,
       hair_style: "lpc",
@@ -176,7 +176,7 @@ export default function SetupPage() {
           <div>
             <p className="text-sm font-bold text-[var(--foreground)] mb-2">Klær</p>
             <div className="flex flex-wrap gap-2">
-              {CLOTHES_OPTIONS.map((c) => (
+              {TORSO_OPTIONS.map((c) => (
                 <button key={c.id} onClick={() => setClothesId(c.id)} className={`px-3 py-1 rounded text-sm border ${clothesId === c.id ? "border-[var(--gold)] text-[var(--gold)]" : "border-[var(--card-border)] text-[var(--gray)]"} bg-[var(--card-bg)]`}>
                   {c.label}
                 </button>

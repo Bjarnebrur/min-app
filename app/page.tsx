@@ -11,7 +11,7 @@ const STATS = [
   { key: "stamina", label: "Stamina", icon: "❤️" },
   { key: "social", label: "Social", icon: "🗣️" },
   { key: "creativity", label: "Creativity", icon: "🎨" },
-  { key: "moral", label: "Moral", icon: "⚖️" },
+  { key: "discipline", label: "Discipline", icon: "⚖️" },
 ];
 
 export default async function Home() {
@@ -53,7 +53,13 @@ export default async function Home() {
             <LpcAvatar
               skin={profile.skin_color || "light"}
               hair={profile.hair_color || "halfmessy_orange"}
-              clothes={profile.shirt_color || "cardigan_brown"}
+              head={profile.helmet || "none"}
+              back={profile.cape || "none"}
+              torso={profile.chest || profile.shirt_color || "cardigan_brown"}
+              legs={profile.legs || "none"}
+              feet={profile.feet || "none"}
+              weapon={profile.weapon || "none"}
+              shield={profile.shield || "none"}
               size={200}
             />
           </Link>
@@ -73,6 +79,7 @@ export default async function Home() {
                 </div>
               ))}
             </div>
+            <Link href="/respec" className="text-[var(--gold)] text-xs mt-2 hover:underline block text-center">⚙ Respec stats</Link>
           </div>
         </div>
 
