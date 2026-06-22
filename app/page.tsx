@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "@/app/components/LogoutButton";
 import LpcAvatar from "@/app/components/LpcAvatar";
+import Notes from "@/app/components/Notes";
 
 const STATS = [
   { key: "strength", label: "Strength", icon: "💪" },
@@ -101,11 +102,14 @@ export default async function Home() {
           </Link>
         </div>
 
-        {/* Høyre side - Rewards placeholder */}
-        <div className="w-80 flex-shrink-0">
-          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-5 h-full min-h-80">
-            <h2 className="font-bold text-sm text-[var(--gold)] mb-3">Rewards</h2>
+        {/* Høyre side - Rewards + Notater */}
+        <div className="w-80 flex-shrink-0 flex flex-col gap-4">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4">
+            <h2 className="font-bold text-sm text-[var(--gold)] mb-2">🏆 Rewards</h2>
             <p className="text-[var(--gray)] text-xs">Kommer snart...</p>
+          </div>
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4 flex-1 min-h-48 max-h-96">
+            <Notes />
           </div>
         </div>
       </div>
