@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "@/app/components/LogoutButton";
+import LpcAvatar from "@/app/components/LpcAvatar";
 
 const STATS = [
   { key: "strength", label: "Strength", icon: "💪" },
@@ -48,9 +49,14 @@ export default async function Home() {
         {/* Venstre side - Avatar + Stats */}
         <div className="w-80 flex-shrink-0 flex flex-col gap-4">
           {/* Avatar placeholder */}
-          <div className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg p-4 h-56 flex items-center justify-center">
-            <span className="text-6xl">⚔️</span>
-          </div>
+          <Link href="/avatar" className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg p-2 flex items-center justify-center hover:border-[var(--gold)] transition-colors cursor-pointer">
+            <LpcAvatar
+              skin={profile.skin_color || "light"}
+              hair={profile.hair_color || "halfmessy_orange"}
+              clothes={profile.shirt_color || "cardigan_brown"}
+              size={200}
+            />
+          </Link>
 
           {/* Stats */}
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-3">
