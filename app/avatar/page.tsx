@@ -79,7 +79,7 @@ export default function AvatarPage() {
           <LpcAvatar skin={skinId} hair={hairId} head={headId} back={backId} torso={torsoId} legs={legsId} feet={feetId} weapon={weaponId} shield={shieldId} size={220} />
         </div>
 
-        <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-96">
+        <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-96 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4">
           {categories.map((cat) => (
             <div key={cat.label}>
               <p className="text-sm font-bold text-[var(--foreground)] mb-1">{cat.label}</p>

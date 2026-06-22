@@ -80,8 +80,9 @@ export default function DailysPage() {
   }
 
   return (
-    <main className="p-8 max-w-md mx-auto mt-10">
-      <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
+    <main className="p-8 mt-10">
+      <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block absolute left-8 top-8">← Tilbake</Link>
+      <div className="max-w-md mx-auto">
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-3xl font-bold text-[var(--gold)]">☀ Dailys</h1>
         <div className="text-right">
@@ -117,6 +118,7 @@ export default function DailysPage() {
           );
         })}
       </ul>
+      </div>
     </main>
   );
 }
