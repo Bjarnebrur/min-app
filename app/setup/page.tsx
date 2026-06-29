@@ -147,7 +147,7 @@ export default function SetupPage() {
 
       <div className="flex gap-8 justify-center">
         <div className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg p-4 flex items-center justify-center">
-          <LpcAvatar skin={skinId} hair={hairId} clothes={clothesId} size={220} />
+          <LpcAvatar skin={skinId} hair={hairId} torso={clothesId} size={220} />
         </div>
 
         <div className="flex flex-col gap-4 flex-1">
