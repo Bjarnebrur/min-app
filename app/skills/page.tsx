@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { calculateLevelUp, xpRequired } from "@/lib/xp";
 
 export default function SkillsPage() {
   const [name, setName] = useState("");
@@ -59,9 +60,8 @@ export default function SkillsPage() {
 
     const skill = skills.find((s) => s.id === task.skill_id);
     if (skill) {
-      const newXp = skill.xp + task.xp_reward;
-      const newLevel = Math.floor(newXp / 100) + 1;
-      await supabase.from("skills").update({ xp: newXp, level: newLevel }).eq("id", skill.id);
+      const { xp, level } = calculateLevelUp(skill.xp, skill.level, task.xp_reward);
+      await supabase.from("skills").update({ xp, level }).eq("id", skill.id);
     }
 
     fetchData();
@@ -101,11 +101,11 @@ export default function SkillsPage() {
                 <p className="font-bold text-[var(--foreground)]">{skill.name}</p>
                 <div className="text-right">
                   <p className="font-bold text-[var(--gold)] text-sm">Level {skill.level}</p>
-                  <p className="text-xs text-[var(--gray)]">{skill.xp} / {skill.level * 100} XP</p>
+                  <p className="text-xs text-[var(--gray)]">{skill.xp} / {xpRequired(skill.level)} XP</p>
                 </div>
               </div>
               <div className="w-full bg-[var(--background)] rounded-full h-2 mt-1 mb-2 border border-[var(--card-border)]">
-                <div className="bg-[var(--xp-bar)] h-2 rounded-full" style={{ width: `${(skill.xp % 100)}%` }}></div>
+                <div className="bg-[var(--xp-bar)] h-2 rounded-full" style={{ width: `${(skill.xp / xpRequired(skill.level)) * 100}%` }}></div>
               </div>
               <ul className="flex flex-col gap-1">
                 {(() => {

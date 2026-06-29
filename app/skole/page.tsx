@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { calculateLevelUp, xpRequired } from "@/lib/xp";
 
 export default function SkolePage() {
   const [items, setItems] = useState<any[]>([]);
@@ -81,9 +82,8 @@ export default function SkolePage() {
     if (!user) return;
     const { data: profile } = await supabase.from("profiles").select().eq("id", user.id).single();
     if (profile) {
-      const newXp = profile.xp + item.xp_reward;
-      const newLevel = Math.floor(newXp / 100) + 1;
-      await supabase.from("profiles").update({ xp: newXp, level: newLevel }).eq("id", user.id);
+      const { xp, level } = calculateLevelUp(profile.xp, profile.level, item.xp_reward);
+      await supabase.from("profiles").update({ xp, level }).eq("id", user.id);
     }
     fetchData();
   }
@@ -114,6 +114,14 @@ export default function SkolePage() {
 
   async function handleCompleteSubject(subjectId: number) {
     await supabase.from("school_items").update({ status: "completed" }).eq("id", subjectId);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data: prof } = await supabase.from("profiles").select().eq("id", user.id).single();
+    if (prof) {
+      const { xp, level } = calculateLevelUp(prof.xp, prof.level, 50);
+      await supabase.from("profiles").update({ xp, level }).eq("id", user.id);
+    }
     fetchData();
   }
 
@@ -146,9 +154,9 @@ export default function SkolePage() {
           <div className="text-right">
             <p className="font-bold">Level {profile.level}</p>
             <div className="w-32 bg-[var(--background)] rounded-full h-3 border border-[var(--card-border)]">
-              <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${profile.xp % 100}%` }}></div>
+              <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${(profile.xp / xpRequired(profile.level)) * 100}%` }}></div>
             </div>
-            <p className="text-xs text-[var(--gray)] mt-1">{profile.xp} / {profile.level * 100} XP</p>
+            <p className="text-xs text-[var(--gray)] mt-1">{profile.xp} / {xpRequired(profile.level)} XP</p>
           </div>
         )}
       </div>
@@ -181,6 +189,17 @@ export default function SkolePage() {
 
         {/* Høyre side - aktive emner */}
         <div className="max-w-xl mx-auto flex-1">
+          <form onSubmit={handleAddSubject} className="flex gap-3 mb-6">
+            <input
+              type="text"
+              placeholder="Fagnavn (f.eks. Programmering)"
+              value={subjectName}
+              onChange={(e) => setSubjectName(e.target.value)}
+              className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)] flex-1"
+            />
+            <button type="submit" className="bg-[var(--gold-dark)] text-white px-4 py-2 rounded hover:bg-[var(--gold)]">+ Legg til fag</button>
+          </form>
+
           {activeSubjects.map((subject) => {
             const categories = items.filter((i) => i.type === "category" && i.parent_id === subject.id);
             return (
@@ -207,7 +226,7 @@ export default function SkolePage() {
                 {categories.length === 0 && (
                   <div className="flex gap-2 mb-3">
                     <button onClick={() => handleAddCategory(subject.id, "Pensum")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Pensum</button>
-                    <button onClick={() => handleAddCategory(subject.id, "Oppgaver")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Oppgaver</button>
+                    <button onClick={() => handleAddCategory(subject.id, "Semesteroppgaver")} className="bg-[var(--gold-dark)] text-white px-3 py-1 rounded text-sm hover:bg-[var(--gold)]">+ Oppgaver</button>
                   </div>
                 )}
 
@@ -236,17 +255,6 @@ export default function SkolePage() {
             );
           })}
 
-          <h2 className="text-xl font-bold mt-8 mb-3 text-[var(--gold)]">Legg til fag</h2>
-          <form onSubmit={handleAddSubject} className="flex gap-3">
-            <input
-              type="text"
-              placeholder="Fagnavn (f.eks. Programmering)"
-              value={subjectName}
-              onChange={(e) => setSubjectName(e.target.value)}
-              className="bg-[var(--card-bg)] border border-[var(--card-border)] p-2 rounded text-[var(--foreground)] flex-1"
-            />
-            <button type="submit" className="bg-[var(--gold-dark)] text-white px-4 py-2 rounded hover:bg-[var(--gold)]">Legg til</button>
-          </form>
         </div>
       </div>
     </main>

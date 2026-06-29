@@ -4,6 +4,7 @@ import Link from "next/link";
 import LogoutButton from "@/app/components/LogoutButton";
 import LpcAvatar from "@/app/components/LpcAvatar";
 import Notes from "@/app/components/Notes";
+import { xpRequired } from "@/lib/xp";
 
 const STATS = [
   { key: "strength", label: "Strength", icon: "💪" },
@@ -39,9 +40,9 @@ export default async function Home() {
         <div className="mt-2">
           <p className="text-xl font-bold">Level {profile.level}</p>
           <div className="w-48 mx-auto bg-[var(--card-bg)] rounded-full h-3 mt-1 border border-[var(--card-border)]">
-            <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${profile.xp % 100}%` }}></div>
+            <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${(profile.xp / xpRequired(profile.level)) * 100}%` }}></div>
           </div>
-          <p className="text-sm text-[var(--gray)] mt-1">{profile.xp} / {profile.level * 100} XP</p>
+          <p className="text-sm text-[var(--gray)] mt-1">{profile.xp} / {xpRequired(profile.level)} XP</p>
         </div>
         <LogoutButton />
       </div>

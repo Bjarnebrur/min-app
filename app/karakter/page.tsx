@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { xpRequired } from "@/lib/xp";
 
 export default async function KarakterPage() {
   const supabase = await createClient();
@@ -46,9 +47,9 @@ export default async function KarakterPage() {
         <div className="mt-4">
           <p className="text-2xl font-bold">Level {profile.level}</p>
           <div className="w-48 mx-auto bg-[var(--background)] rounded-full h-3 mt-2 border border-[var(--card-border)]">
-            <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${profile.xp % 100}%` }}></div>
+            <div className="bg-[var(--xp-bar)] h-full rounded-full" style={{ width: `${(profile.xp / xpRequired(profile.level)) * 100}%` }}></div>
           </div>
-          <p className="text-sm text-[var(--gray)] mt-1">{profile.xp} / {profile.level * 100} XP</p>
+          <p className="text-sm text-[var(--gray)] mt-1">{profile.xp} / {xpRequired(profile.level)} XP</p>
         </div>
       </div>
 
@@ -72,9 +73,9 @@ export default async function KarakterPage() {
               <p className="text-[var(--gold)] font-bold">Lvl {skill.level}</p>
             </div>
             <div className="w-full bg-[var(--background)] rounded-full h-2 mt-2 border border-[var(--card-border)]">
-              <div className="bg-[var(--xp-bar)] h-2 rounded-full" style={{ width: `${skill.xp % 100}%` }}></div>
+              <div className="bg-[var(--xp-bar)] h-2 rounded-full" style={{ width: `${(skill.xp / xpRequired(skill.level)) * 100}%` }}></div>
             </div>
-            <p className="text-xs text-[var(--gray)] mt-1">{skill.xp} / {skill.level * 100} XP</p>
+            <p className="text-xs text-[var(--gray)] mt-1">{skill.xp} / {xpRequired(skill.level)} XP</p>
           </li>
         ))}
       </ul>
