@@ -2,8 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import LogoutButton from "@/app/components/LogoutButton";
+import ResetButton from "@/app/components/ResetButton";
 import LpcAvatar from "@/app/components/LpcAvatar";
 import Notes from "@/app/components/Notes";
+import Rewards from "@/app/components/Rewards";
 import { xpRequired } from "@/lib/xp";
 
 const STATS = [
@@ -45,6 +47,7 @@ export default async function Home() {
           <p className="text-sm text-[var(--gray)] mt-1">{profile.xp} / {xpRequired(profile.level)} XP</p>
         </div>
         <LogoutButton />
+        <ResetButton />
       </div>
 
       <div className="flex gap-8 justify-center">
@@ -105,9 +108,9 @@ export default async function Home() {
 
         {/* Høyre side - Rewards + Notater */}
         <div className="w-80 flex-shrink-0 flex flex-col gap-4">
-          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4 max-h-64 overflow-y-auto">
             <h2 className="font-bold text-sm text-[var(--gold)] mb-2">🏆 Rewards</h2>
-            <p className="text-[var(--gray)] text-xs">Kommer snart...</p>
+            <Rewards level={profile.level} />
           </div>
           <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4 flex-1 min-h-48 max-h-96">
             <Notes />
