@@ -50,9 +50,8 @@ const FEET_OPTIONS = [
 const WEAPON_OPTIONS = [
   { id: "none", label: "Ingen", back: "", front: "", oversized: false },
   { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png", oversized: true },
-  { id: "sword_alt", label: "Sverd alt.", back: "/avatar/sword_back_alt.png", front: "/avatar/sword_front_alt.png", oversized: true },
   { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png", oversized: true },
-  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", oversized: false },
+  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", oversized: true },
   { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png", oversized: false },
 ];
 
