@@ -48,11 +48,11 @@ const FEET_OPTIONS = [
 ];
 
 const WEAPON_OPTIONS = [
-  { id: "none", label: "Ingen", back: "", front: "", oversized: false },
-  { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png", oversized: true },
-  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png", oversized: true },
-  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", oversized: true },
-  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png", oversized: false },
+  { id: "none", label: "Ingen", back: "", front: "", sheetWidth: 832 },
+  { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png", sheetWidth: 768 },
+  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png", sheetWidth: 832 },
+  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", sheetWidth: 1152 },
+  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png", sheetWidth: 832 },
 ];
 
 const SHIELD_OPTIONS = [
@@ -73,27 +73,9 @@ interface LpcAvatarProps {
   size?: number;
 }
 
-function getFrameStyle(src: string, size: number, isOversized = false) {
+function getFrameStyle(src: string, size: number, sheetWidth = 832) {
   const frameWidth = 64;
   const scale = size / frameWidth;
-
-  if (isOversized) {
-    const scale = size / frameWidth;
-    const offsetY = -frameWidth * 10 * scale;
-    return {
-      position: "absolute" as const,
-      top: 0,
-      left: 0,
-      width: size,
-      height: size,
-      backgroundImage: `url(${src})`,
-      backgroundPosition: `0px ${offsetY}px`,
-      backgroundSize: `${768 * scale}px auto`,
-      backgroundRepeat: "no-repeat" as const,
-      imageRendering: "pixelated" as const,
-    };
-  }
-
   const offsetY = -frameWidth * 10 * scale;
   return {
     position: "absolute" as const,
@@ -103,7 +85,7 @@ function getFrameStyle(src: string, size: number, isOversized = false) {
     height: size,
     backgroundImage: `url(${src})`,
     backgroundPosition: `0px ${offsetY}px`,
-    backgroundSize: `${832 * scale}px auto`,
+    backgroundSize: `${sheetWidth * scale}px auto`,
     backgroundRepeat: "no-repeat" as const,
     imageRendering: "pixelated" as const,
   };
@@ -125,27 +107,27 @@ export default function LpcAvatar({ skin, hair, head = "none", back = "none", to
   const oversizedSrcs = [weaponData.back, weaponData.front].filter(Boolean);
 
   const layers = [
-    { src: shieldData.back, os: false },
-    { src: backData.back, os: false },
-    { src: weaponData.back, os: weaponData.oversized },
-    { src: skinData.body, os: false },
-    { src: feetData.src, os: false },
-    { src: legsData.src, os: false },
-    { src: torsoData.src, os: false },
-    { src: skinData.head, os: false },
-    { src: skinData.face, os: false },
-    { src: showHair ? hairData.src : "", os: false },
-    { src: headData.src, os: false },
-    { src: backData.front, os: false },
-    { src: backData.trim, os: false },
-    { src: shieldData.front, os: false },
-    { src: weaponData.front, os: weaponData.oversized },
+    { src: shieldData.back, w: 832 },
+    { src: backData.back, w: 832 },
+    { src: weaponData.back, w: weaponData.sheetWidth },
+    { src: skinData.body, w: 832 },
+    { src: feetData.src, w: 832 },
+    { src: legsData.src, w: 832 },
+    { src: torsoData.src, w: 832 },
+    { src: skinData.head, w: 832 },
+    { src: skinData.face, w: 832 },
+    { src: showHair ? hairData.src : "", w: 832 },
+    { src: headData.src, w: 832 },
+    { src: backData.front, w: 832 },
+    { src: backData.trim, w: 832 },
+    { src: shieldData.front, w: 832 },
+    { src: weaponData.front, w: weaponData.sheetWidth },
   ].filter((l) => l.src);
 
   return (
     <div style={{ width: size, height: size, position: "relative", overflow: "hidden" }}>
       {layers.map((layer, i) => (
-        <div key={i} style={getFrameStyle(layer.src, size, layer.os)} />
+        <div key={i} style={getFrameStyle(layer.src, size, layer.w)} />
       ))}
     </div>
   );
