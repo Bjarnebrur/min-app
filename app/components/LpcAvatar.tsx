@@ -11,6 +11,9 @@ const HAIR_OPTIONS = [
   { id: "short_black", label: "Kort svart", src: "/avatar/hair_short_black.png" },
   { id: "long_blonde", label: "Langt blondt", src: "/avatar/hair_long_blonde.png" },
   { id: "wavy_red", label: "Bølget rødt", src: "/avatar/hair_wavy_red.png" },
+  { id: "loose_brown", label: "Løst brunt", src: "/avatar/hair_loose_brown.png" },
+  { id: "spiked_black", label: "Pigget svart", src: "/avatar/hair_spiked_black.png" },
+  { id: "bald", label: "Skallet", src: "/avatar/hair_bald_white.png" },
   { id: "none", label: "Ingen", src: "" },
 ];
 
@@ -30,6 +33,8 @@ const TORSO_OPTIONS = [
   { id: "shirt_white", label: "Hvit skjorte", src: "/avatar/shirt_white.png" },
   { id: "armor_leather", label: "Lær-rustning", src: "/avatar/armor_leather.png" },
   { id: "armor_plate", label: "Plate-bryst", src: "/avatar/armor_plate.png" },
+  { id: "cardigan_red", label: "Rød cardigan", src: "/avatar/torso_cardigan_red.png" },
+  { id: "tabbard_green", label: "Grønn tabbard", src: "/avatar/torso_tabbard_green.png" },
 ];
 
 const LEGS_OPTIONS = [
@@ -45,6 +50,10 @@ const FEET_OPTIONS = [
 const WEAPON_OPTIONS = [
   { id: "none", label: "Ingen", back: "", front: "" },
   { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png" },
+  { id: "sword_alt", label: "Sverd alt.", back: "/avatar/sword_back_alt.png", front: "/avatar/sword_front_alt.png" },
+  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png" },
+  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png" },
+  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png" },
 ];
 
 const SHIELD_OPTIONS = [
