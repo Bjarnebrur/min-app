@@ -16,6 +16,7 @@ export default function AvatarPage() {
   const [feetId, setFeetId] = useState("none");
   const [weaponId, setWeaponId] = useState("none");
   const [shieldId, setShieldId] = useState("none");
+  const [openCat, setOpenCat] = useState<string | null>(null);
   const supabase = createClient();
   const router = useRouter();
 
@@ -39,6 +40,12 @@ export default function AvatarPage() {
     fetchProfile();
   }, []);
 
+  function handleWeaponChange(id: string) {
+    setWeaponId(id);
+    const weapon = WEAPON_OPTIONS.find((w) => w.id === id);
+    if (weapon?.handed === "two") setShieldId("none");
+  }
+
   async function handleSave() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -57,16 +64,82 @@ export default function AvatarPage() {
     router.push("/");
   }
 
+  const isTwoHanded = WEAPON_OPTIONS.find((w) => w.id === weaponId)?.handed === "two";
+
   const categories = [
-    { label: "1. Hudfarge", value: skinId, setter: setSkinId, options: SKIN_OPTIONS },
-    { label: "2. Hår", value: hairId, setter: setHairId, options: HAIR_OPTIONS },
-    { label: "3. Hode", value: headId, setter: setHeadId, options: HEAD_OPTIONS },
-    { label: "4. Rygg", value: backId, setter: setBackId, options: BACK_OPTIONS },
-    { label: "5. Torso", value: torsoId, setter: setTorsoId, options: TORSO_OPTIONS },
-    { label: "6. Ben", value: legsId, setter: setLegsId, options: LEGS_OPTIONS },
-    { label: "7. Føtter", value: feetId, setter: setFeetId, options: FEET_OPTIONS },
-    { label: "8. Våpen", value: weaponId, setter: setWeaponId, options: WEAPON_OPTIONS },
-    { label: "9. Skjold", value: shieldId, setter: setShieldId, options: SHIELD_OPTIONS },
+    {
+      key: "skin",
+      label: "Hudfarge",
+      value: skinId,
+      options: SKIN_OPTIONS,
+      setter: setSkinId,
+      preview: (opt: any) => <LpcAvatar skin={opt.id} hair="none" torso="none" size={48} />,
+    },
+    {
+      key: "hair",
+      label: "Hår",
+      value: hairId,
+      options: HAIR_OPTIONS,
+      setter: setHairId,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair={opt.id} torso="none" size={48} />,
+    },
+    {
+      key: "head",
+      label: "Hode",
+      value: headId,
+      options: HEAD_OPTIONS,
+      setter: setHeadId,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair={opt.id === "none" ? hairId : "none"} head={opt.id} torso="none" size={48} />,
+    },
+    {
+      key: "back",
+      label: "Rygg",
+      value: backId,
+      options: BACK_OPTIONS,
+      setter: setBackId,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair="none" back={opt.id} torso="none" size={48} />,
+    },
+    {
+      key: "torso",
+      label: "Torso",
+      value: torsoId,
+      options: TORSO_OPTIONS,
+      setter: setTorsoId,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair="none" torso={opt.id} size={48} />,
+    },
+    {
+      key: "legs",
+      label: "Ben",
+      value: legsId,
+      options: LEGS_OPTIONS,
+      setter: setLegsId,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair="none" torso="none" legs={opt.id} size={48} />,
+    },
+    {
+      key: "feet",
+      label: "Føtter",
+      value: feetId,
+      options: FEET_OPTIONS,
+      setter: setFeetId,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair="none" torso="none" feet={opt.id} size={48} />,
+    },
+    {
+      key: "weapon",
+      label: "Våpen",
+      value: weaponId,
+      options: WEAPON_OPTIONS,
+      setter: handleWeaponChange,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair="none" torso="none" weapon={opt.id} size={48} />,
+    },
+    {
+      key: "shield",
+      label: isTwoHanded ? "Skjold (låst — tohånds våpen)" : "Skjold",
+      value: shieldId,
+      options: SHIELD_OPTIONS,
+      setter: setShieldId,
+      disabled: isTwoHanded,
+      preview: (opt: any) => <LpcAvatar skin={skinId} hair="none" torso="none" shield={opt.id} size={48} />,
+    },
   ];
 
   return (
@@ -79,17 +152,45 @@ export default function AvatarPage() {
           <LpcAvatar skin={skinId} hair={hairId} head={headId} back={backId} torso={torsoId} legs={legsId} feet={feetId} weapon={weaponId} shield={shieldId} size={220} />
         </div>
 
-        <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-96 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-4">
+        <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[480px]">
           {categories.map((cat) => (
-            <div key={cat.label}>
-              <p className="text-sm font-bold text-[var(--foreground)] mb-1">{cat.label}</p>
-              <div className="flex flex-wrap gap-1">
-                {cat.options.map((opt: any) => (
-                  <button key={opt.id} onClick={() => cat.setter(opt.id)} className={`px-2 py-1 rounded text-xs border ${cat.value === opt.id ? "border-[var(--gold)] text-[var(--gold)]" : "border-[var(--card-border)] text-[var(--gray)]"} bg-[var(--card-bg)]`}>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+            <div
+              key={cat.key}
+              className={`bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg overflow-hidden ${cat.disabled ? "opacity-40 pointer-events-none" : ""}`}
+            >
+              <button
+                onClick={() => setOpenCat(openCat === cat.key ? null : cat.key)}
+                className="w-full flex justify-between items-center px-3 py-2.5 text-left hover:bg-[var(--background)] transition-colors gap-3"
+              >
+                <span className="text-sm font-bold text-[var(--foreground)] flex-shrink-0">{cat.label}</span>
+                <span className="text-xs text-[var(--gray)] truncate text-right">
+                  {cat.options.find((o: any) => o.id === cat.value)?.label} {openCat === cat.key ? "▲" : "▼"}
+                </span>
+              </button>
+
+              {openCat === cat.key && (
+                <div className="px-3 pb-3 border-t border-[var(--card-border)] pt-3 max-h-64 overflow-y-auto">
+                  <div className="flex flex-wrap gap-2">
+                    {cat.options.map((opt: any) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => cat.setter(opt.id)}
+                        style={{ width: "72px", flexShrink: 0 }}
+                        className={`flex flex-col items-center gap-1 p-1.5 rounded border transition-colors ${
+                          cat.value === opt.id
+                            ? "border-[var(--gold)] bg-[var(--background)]"
+                            : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"
+                        }`}
+                      >
+                        <div className="w-12 h-12 overflow-hidden rounded flex-shrink-0">{cat.preview(opt)}</div>
+                        <span className={`text-xs w-full text-center leading-tight break-words ${cat.value === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>
+                          {opt.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

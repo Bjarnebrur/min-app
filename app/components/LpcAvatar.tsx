@@ -48,11 +48,11 @@ const FEET_OPTIONS = [
 ];
 
 const WEAPON_OPTIONS = [
-  { id: "none", label: "Ingen", back: "", front: "", sheetWidth: 832 },
-  { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png", sheetWidth: 768 },
-  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png", sheetWidth: 832 },
-  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", sheetWidth: 1152 },
-  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png", sheetWidth: 832 },
+  { id: "none", label: "Ingen", back: "", front: "", sheetWidth: 832, handed: "one" as const },
+  { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png", sheetWidth: 768, handed: "one" as const },
+  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png", sheetWidth: 832, handed: "two" as const },
+  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", sheetWidth: 1152, handed: "two" as const },
+  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png", sheetWidth: 832, handed: "two" as const },
 ];
 
 const SHIELD_OPTIONS = [
