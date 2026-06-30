@@ -48,12 +48,12 @@ const FEET_OPTIONS = [
 ];
 
 const WEAPON_OPTIONS = [
-  { id: "none", label: "Ingen", back: "", front: "" },
-  { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png" },
-  { id: "sword_alt", label: "Sverd alt.", back: "/avatar/sword_back_alt.png", front: "/avatar/sword_front_alt.png" },
-  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png" },
-  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png" },
-  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png" },
+  { id: "none", label: "Ingen", back: "", front: "", oversized: false },
+  { id: "sword_steel", label: "Stål-sverd", back: "/avatar/sword_steel_back.png", front: "/avatar/sword_steel_front.png", oversized: true },
+  { id: "sword_alt", label: "Sverd alt.", back: "/avatar/sword_back_alt.png", front: "/avatar/sword_front_alt.png", oversized: true },
+  { id: "spear", label: "Spyd", back: "/avatar/weapon_spear_back.png", front: "/avatar/weapon_spear_front.png", oversized: true },
+  { id: "greataxe", label: "Stor-øks", back: "/avatar/melee_greataxe_back.png", front: "/avatar/melee_greataxe_front.png", oversized: false },
+  { id: "crossbow", label: "Armbøst", back: "/avatar/ranged_crossbow_back.png", front: "/avatar/ranged_crossbow_front.png", oversized: false },
 ];
 
 const SHIELD_OPTIONS = [
@@ -128,7 +128,7 @@ export default function LpcAvatar({ skin, hair, head = "none", back = "none", to
   const layers = [
     { src: shieldData.back, os: false },
     { src: backData.back, os: false },
-    { src: weaponData.back, os: true },
+    { src: weaponData.back, os: weaponData.oversized },
     { src: skinData.body, os: false },
     { src: feetData.src, os: false },
     { src: legsData.src, os: false },
@@ -140,7 +140,7 @@ export default function LpcAvatar({ skin, hair, head = "none", back = "none", to
     { src: backData.front, os: false },
     { src: backData.trim, os: false },
     { src: shieldData.front, os: false },
-    { src: weaponData.front, os: true },
+    { src: weaponData.front, os: weaponData.oversized },
   ].filter((l) => l.src);
 
   return (
