@@ -153,14 +153,29 @@ export default function AvatarPage() {
     },
   ];
 
+  const frameOptions = [
+    { id: "none", label: "Ingen", frame_id: null },
+    ...unlockedFrames.map((r) => ({ id: r.frame_id, label: r.name, frame_id: r.frame_id })),
+  ];
+
   return (
     <main className="p-8 max-w-2xl mx-auto mt-10">
       <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
       <h1 className="text-3xl font-bold mb-6 text-[var(--gold)]">Rediger avatar</h1>
 
       <div className="flex gap-8">
-        <div className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg p-4 flex items-center justify-center flex-shrink-0">
-          <LpcAvatar skin={skinId} hair={hairId} head={headId} back={backId} torso={torsoId} legs={legsId} feet={feetId} weapon={weaponId} shield={shieldId} size={220} />
+        <div className="flex-shrink-0 flex items-center justify-center mr-8" style={{ width: "260px" }}>
+        <div className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg" style={{ width: "222px", height: "222px" }}>
+          <div style={{ position: "relative", width: 220, height: 220 }}>
+            <div style={{ position: "absolute", top: 0, left: 0, width: 220, height: 220, background: "var(--card-bg)", borderRadius: "4px" }} />
+            <LpcAvatar skin={skinId} hair={hairId} head={headId} back={backId} torso={torsoId} legs={legsId} feet={feetId} weapon={weaponId} shield={shieldId} size={220} />
+            {activeFrame !== "none" && (
+              <div style={{ position: "absolute", top: -36, left: -36, width: 292, height: 292 }}>
+                <FrameOverlay src={`/frames/${activeFrame}.png`} size={292} />
+              </div>
+            )}
+          </div>
+        </div>
         </div>
 
         <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[480px]">
@@ -180,21 +195,20 @@ export default function AvatarPage() {
               </button>
 
               {openCat === cat.key && (
-                <div className="px-3 pb-3 border-t border-[var(--card-border)] pt-3 max-h-64 overflow-y-auto">
-                  <div className="flex flex-wrap gap-2">
+                <div className="px-3 pb-3 border-t border-[var(--card-border)] pt-3 max-h-80 overflow-y-auto">
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
                     {cat.options.map((opt: any) => (
                       <button
                         key={opt.id}
                         onClick={() => cat.setter(opt.id)}
-                        style={{ width: "72px", flexShrink: 0 }}
-                        className={`flex flex-col items-center gap-1 p-1.5 rounded border transition-colors ${
+                        className={`flex flex-col items-center gap-2 p-2 rounded border transition-colors ${
                           cat.value === opt.id
                             ? "border-[var(--gold)] bg-[var(--background)]"
                             : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"
                         }`}
                       >
                         <div className="w-12 h-12 overflow-hidden rounded flex-shrink-0">{cat.preview(opt)}</div>
-                        <span className={`text-xs w-full text-center leading-tight break-words ${cat.value === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>
+                        <span className={`text-xs w-full text-center leading-snug break-words ${cat.value === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>
                           {opt.label}
                         </span>
                       </button>
@@ -204,6 +218,48 @@ export default function AvatarPage() {
               )}
             </div>
           ))}
+
+          {/* Ramme-velger */}
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg overflow-hidden">
+            <button
+              onClick={() => setOpenCat(openCat === "frame" ? null : "frame")}
+              className="w-full flex justify-between items-center px-3 py-2.5 text-left hover:bg-[var(--background)] transition-colors gap-3"
+            >
+              <span className="text-sm font-bold text-[var(--foreground)] flex-shrink-0">🖼️ Ramme</span>
+              <span className="text-xs text-[var(--gray)] truncate text-right">
+                {frameOptions.find((f) => f.id === activeFrame)?.label ?? "Ingen"} {openCat === "frame" ? "▲" : "▼"}
+              </span>
+            </button>
+            {openCat === "frame" && (
+              <div className="px-3 pb-3 border-t border-[var(--card-border)] pt-3 max-h-64 overflow-y-auto">
+                {frameOptions.length === 1 ? (
+                  <p className="text-xs text-[var(--gray)]">Ingen rammer låst opp ennå. Level opp for å få rammer!</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {frameOptions.map((opt) => (
+                      <button
+                        key={opt.id}
+                        onClick={() => setActiveFrame(opt.id)}
+                        style={{ width: "80px", flexShrink: 0 }}
+                        className={`flex flex-col items-center gap-1 p-1.5 rounded border transition-colors ${
+                          activeFrame === opt.id
+                            ? "border-[var(--gold)] bg-[var(--background)]"
+                            : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"
+                        }`}
+                      >
+                        <div style={{ position: "relative", width: 48, height: 48, flexShrink: 0 }}>
+                          {opt.frame_id ? <FrameOverlay src={`/frames/${opt.frame_id}.png`} size={48} /> : <div className="w-12 h-12 flex items-center justify-center text-[var(--gray)] text-xs">∅</div>}
+                        </div>
+                        <span className={`text-xs w-full text-center leading-tight break-words ${activeFrame === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>
+                          {opt.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
