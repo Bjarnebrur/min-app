@@ -163,7 +163,7 @@ export default function AvatarPage() {
       <Link href="/" className="text-[var(--gold)] hover:underline text-sm mb-4 inline-block">← Tilbake</Link>
       <h1 className="text-3xl font-bold mb-6 text-[var(--gold)]">Rediger avatar</h1>
 
-      <div className="flex gap-8">
+      <div className="flex gap-8 items-center">
         <div className="flex-shrink-0 flex items-center justify-center mr-8" style={{ width: "260px" }}>
         <div className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg" style={{ width: "222px", height: "222px" }}>
           <div style={{ position: "relative", width: 220, height: 220 }}>
@@ -178,94 +178,84 @@ export default function AvatarPage() {
         </div>
         </div>
 
-        <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[480px]">
-          {categories.map((cat) => (
-            <div
-              key={cat.key}
-              className={`bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg overflow-hidden ${cat.disabled ? "opacity-40 pointer-events-none" : ""}`}
-            >
+        <div style={{ width: "300px", flexShrink: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+          {[...categories, { key: "frame", label: "🖼️ Ramme", value: activeFrame, isFrame: true }].map((cat: any) => (
+            <div key={cat.key} style={{ position: "relative" }} className={cat.disabled ? "opacity-40 pointer-events-none" : ""}>
               <button
                 onClick={() => setOpenCat(openCat === cat.key ? null : cat.key)}
-                className="w-full flex justify-between items-center px-3 py-2.5 text-left hover:bg-[var(--background)] transition-colors gap-3"
+                className="w-full flex justify-between items-center px-3 py-2.5 text-left hover:bg-[var(--background)] transition-colors gap-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg"
               >
                 <span className="text-sm font-bold text-[var(--foreground)] flex-shrink-0">{cat.label}</span>
                 <span className="text-xs text-[var(--gray)] truncate text-right">
-                  {cat.options.find((o: any) => o.id === cat.value)?.label} {openCat === cat.key ? "▲" : "▼"}
+                  {cat.isFrame
+                    ? (frameOptions.find((f) => f.id === activeFrame)?.label ?? "Ingen")
+                    : cat.options?.find((o: any) => o.id === cat.value)?.label
+                  } {openCat === cat.key ? "▲" : "▼"}
                 </span>
               </button>
 
               {openCat === cat.key && (
-                <div className="px-3 pb-3 border-t border-[var(--card-border)] pt-3 max-h-80 overflow-y-auto">
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
-                    {cat.options.map((opt: any) => (
-                      <button
-                        key={opt.id}
-                        onClick={() => cat.setter(opt.id)}
-                        className={`flex flex-col items-center gap-2 p-2 rounded border transition-colors ${
-                          cat.value === opt.id
-                            ? "border-[var(--gold)] bg-[var(--background)]"
-                            : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"
-                        }`}
-                      >
-                        <div className="w-12 h-12 overflow-hidden rounded flex-shrink-0">{cat.preview(opt)}</div>
-                        <span className={`text-xs w-full text-center leading-snug break-words ${cat.value === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>
-                          {opt.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: 0,
+                    width: "300px",
+                    zIndex: 50,
+                    background: "var(--card-bg)",
+                    border: "1px solid var(--card-border)",
+                    borderRadius: "8px",
+                    marginTop: "4px",
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                    padding: "12px",
+                  }}
+                >
+                  {cat.isFrame ? (
+                    frameOptions.length === 1 ? (
+                      <p className="text-xs text-[var(--gray)]">Ingen rammer låst opp ennå. Level opp for å få rammer!</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {frameOptions.map((opt) => (
+                          <button
+                            key={opt.id}
+                            onClick={() => { setActiveFrame(opt.id); setOpenCat(null); }}
+                            style={{ width: "80px", flexShrink: 0 }}
+                            className={`flex flex-col items-center gap-1 p-1.5 rounded border transition-colors ${activeFrame === opt.id ? "border-[var(--gold)] bg-[var(--background)]" : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"}`}
+                          >
+                            <div style={{ position: "relative", width: 48, height: 48 }}>
+                              {opt.frame_id ? <FrameOverlay src={`/frames/${opt.frame_id}.png`} size={48} /> : <div className="w-12 h-12 flex items-center justify-center text-[var(--gray)] text-xs">∅</div>}
+                            </div>
+                            <span className={`text-xs w-full text-center leading-tight break-words ${activeFrame === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>{opt.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )
+                  ) : (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 82px)", gap: "8px" }}>
+                      {cat.options?.map((opt: any) => (
+                        <button
+                          key={opt.id}
+                          onClick={() => { cat.setter(opt.id); setOpenCat(null); }}
+                          style={{ height: "130px" }}
+                          className={`flex flex-col items-center justify-start gap-2 p-2 rounded border transition-colors ${cat.value === opt.id ? "border-[var(--gold)] bg-[var(--background)]" : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"}`}
+                        >
+                          <div className="w-12 h-12 overflow-hidden rounded flex-shrink-0">{cat.preview(opt)}</div>
+                          <span className={`text-xs w-full text-center leading-snug break-words ${cat.value === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>{opt.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           ))}
 
-          {/* Ramme-velger */}
-          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg overflow-hidden">
-            <button
-              onClick={() => setOpenCat(openCat === "frame" ? null : "frame")}
-              className="w-full flex justify-between items-center px-3 py-2.5 text-left hover:bg-[var(--background)] transition-colors gap-3"
-            >
-              <span className="text-sm font-bold text-[var(--foreground)] flex-shrink-0">🖼️ Ramme</span>
-              <span className="text-xs text-[var(--gray)] truncate text-right">
-                {frameOptions.find((f) => f.id === activeFrame)?.label ?? "Ingen"} {openCat === "frame" ? "▲" : "▼"}
-              </span>
-            </button>
-            {openCat === "frame" && (
-              <div className="px-3 pb-3 border-t border-[var(--card-border)] pt-3 max-h-64 overflow-y-auto">
-                {frameOptions.length === 1 ? (
-                  <p className="text-xs text-[var(--gray)]">Ingen rammer låst opp ennå. Level opp for å få rammer!</p>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {frameOptions.map((opt) => (
-                      <button
-                        key={opt.id}
-                        onClick={() => setActiveFrame(opt.id)}
-                        style={{ width: "80px", flexShrink: 0 }}
-                        className={`flex flex-col items-center gap-1 p-1.5 rounded border transition-colors ${
-                          activeFrame === opt.id
-                            ? "border-[var(--gold)] bg-[var(--background)]"
-                            : "border-[var(--card-border)] bg-[var(--background)] hover:border-[var(--gold)]"
-                        }`}
-                      >
-                        <div style={{ position: "relative", width: 48, height: 48, flexShrink: 0 }}>
-                          {opt.frame_id ? <FrameOverlay src={`/frames/${opt.frame_id}.png`} size={48} /> : <div className="w-12 h-12 flex items-center justify-center text-[var(--gray)] text-xs">∅</div>}
-                        </div>
-                        <span className={`text-xs w-full text-center leading-tight break-words ${activeFrame === opt.id ? "text-[var(--gold)]" : "text-[var(--gray)]"}`}>
-                          {opt.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <button onClick={handleSave} className="w-full mt-2 bg-[var(--gold-dark)] text-white p-2 rounded hover:bg-[var(--gold)]">
+            Lagre endringer
+          </button>
         </div>
       </div>
-
-      <button onClick={handleSave} className="w-full mt-6 bg-[var(--gold-dark)] text-white p-2 rounded hover:bg-[var(--gold)]">
-        Lagre endringer
-      </button>
     </main>
   );
 }
