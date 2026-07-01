@@ -69,10 +69,11 @@ export default async function Home() {
                 weapon={profile.weapon || "none"}
                 shield={profile.shield || "none"}
                 size={200}
+                shiftDown={0}
               />
               {profile.active_frame && profile.active_frame !== "none" && (
-                <div style={{ position: "absolute", top: -20, left: -30, width: 300, height: 240 }}>
-                  <FrameOverlay src={`/frames/${profile.active_frame}.png`} size={240} />
+                <div style={{ position: "absolute", top: -35, left: -35, width: 270, height: 270 }}>
+                  <FrameOverlay src={`/frames/${profile.active_frame}.png`} size={270} />
                 </div>
               )}
             </div>

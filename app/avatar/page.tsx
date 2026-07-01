@@ -168,7 +168,7 @@ export default function AvatarPage() {
         <div className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg" style={{ width: "222px", height: "222px" }}>
           <div style={{ position: "relative", width: 220, height: 220 }}>
             <div style={{ position: "absolute", top: 0, left: 0, width: 220, height: 220, background: "var(--card-bg)", borderRadius: "4px" }} />
-            <LpcAvatar skin={skinId} hair={hairId} head={headId} back={backId} torso={torsoId} legs={legsId} feet={feetId} weapon={weaponId} shield={shieldId} size={220} />
+            <LpcAvatar skin={skinId} hair={hairId} head={headId} back={backId} torso={torsoId} legs={legsId} feet={feetId} weapon={weaponId} shield={shieldId} size={220} shiftDown={25} />
             {activeFrame !== "none" && (
               <div style={{ position: "absolute", top: -36, left: -36, width: 292, height: 292 }}>
                 <FrameOverlay src={`/frames/${activeFrame}.png`} size={292} />

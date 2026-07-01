@@ -71,12 +71,13 @@ interface LpcAvatarProps {
   weapon?: string;
   shield?: string;
   size?: number;
+  shiftDown?: number;
 }
 
-function getFrameStyle(src: string, size: number, sheetWidth = 832) {
+function getFrameStyle(src: string, size: number, sheetWidth = 832, shiftDown = 0) {
   const frameWidth = 64;
   const scale = size / frameWidth;
-  const offsetY = -frameWidth * 10 * scale;
+  const offsetY = -frameWidth * 10 * scale - shiftDown;
   return {
     position: "absolute" as const,
     top: 0,
@@ -91,7 +92,7 @@ function getFrameStyle(src: string, size: number, sheetWidth = 832) {
   };
 }
 
-export default function LpcAvatar({ skin, hair, head = "none", back = "none", torso, legs = "none", feet = "none", weapon = "none", shield = "none", size = 200 }: LpcAvatarProps) {
+export default function LpcAvatar({ skin, hair, head = "none", back = "none", torso, legs = "none", feet = "none", weapon = "none", shield = "none", size = 200, shiftDown = 0 }: LpcAvatarProps) {
   const skinData = SKIN_OPTIONS.find((s) => s.id === skin) || SKIN_OPTIONS[0];
   const hairData = HAIR_OPTIONS.find((h) => h.id === hair) || HAIR_OPTIONS[0];
   const headData = HEAD_OPTIONS.find((h) => h.id === head) || HEAD_OPTIONS[0];
@@ -127,7 +128,7 @@ export default function LpcAvatar({ skin, hair, head = "none", back = "none", to
   return (
     <div style={{ width: size, height: size, position: "relative", overflow: "hidden" }}>
       {layers.map((layer, i) => (
-        <div key={i} style={getFrameStyle(layer.src, size, layer.w)} />
+        <div key={i} style={getFrameStyle(layer.src, size, layer.w, shiftDown)} />
       ))}
     </div>
   );

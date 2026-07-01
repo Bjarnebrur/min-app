@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { calculateLevelUp, xpRequired } from "@/lib/xp";
+import { calculateLevelUp, xpRequired, getXpMultiplier } from "@/lib/xp";
 
 export default function SkolePage() {
   const [items, setItems] = useState<any[]>([]);
@@ -82,7 +82,9 @@ export default function SkolePage() {
     if (!user) return;
     const { data: profile } = await supabase.from("profiles").select().eq("id", user.id).single();
     if (profile) {
-      const { xp, level } = calculateLevelUp(profile.xp, profile.level, item.xp_reward);
+      const { count } = await supabase.from("school_items").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("type", "subject").neq("status", "completed");
+      const multiplier = getXpMultiplier(count ?? 0);
+      const { xp, level } = calculateLevelUp(profile.xp, profile.level, Math.round(item.xp_reward * multiplier));
       await supabase.from("profiles").update({ xp, level }).eq("id", user.id);
     }
     fetchData();
@@ -119,7 +121,9 @@ export default function SkolePage() {
     if (!user) return;
     const { data: prof } = await supabase.from("profiles").select().eq("id", user.id).single();
     if (prof) {
-      const { xp, level } = calculateLevelUp(prof.xp, prof.level, 50);
+      const { count } = await supabase.from("school_items").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("type", "subject").neq("status", "completed");
+      const multiplier = getXpMultiplier(count ?? 0);
+      const { xp, level } = calculateLevelUp(prof.xp, prof.level, Math.round(50 * multiplier));
       await supabase.from("profiles").update({ xp, level }).eq("id", user.id);
     }
     fetchData();
