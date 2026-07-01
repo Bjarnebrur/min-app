@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import LpcAvatar, { SKIN_OPTIONS, HAIR_OPTIONS, HEAD_OPTIONS, BACK_OPTIONS, TORSO_OPTIONS, LEGS_OPTIONS, FEET_OPTIONS, WEAPON_OPTIONS, SHIELD_OPTIONS } from "@/app/components/LpcAvatar";
+import FrameOverlay from "@/app/components/FrameOverlay";
 
 export default function AvatarPage() {
   const [skinId, setSkinId] = useState("light");
@@ -16,6 +17,8 @@ export default function AvatarPage() {
   const [feetId, setFeetId] = useState("none");
   const [weaponId, setWeaponId] = useState("none");
   const [shieldId, setShieldId] = useState("none");
+  const [activeFrame, setActiveFrame] = useState("none");
+  const [unlockedFrames, setUnlockedFrames] = useState<any[]>([]);
   const [openCat, setOpenCat] = useState<string | null>(null);
   const supabase = createClient();
   const router = useRouter();
@@ -35,6 +38,13 @@ export default function AvatarPage() {
         setFeetId(data.feet || "none");
         setWeaponId(data.weapon || "none");
         setShieldId(data.shield || "none");
+        setActiveFrame(data.active_frame || "none");
+      }
+      const { data: userRewards } = await supabase.from("user_rewards").select("reward_id").eq("user_id", user.id);
+      if (userRewards) {
+        const ids = userRewards.map((ur: any) => ur.reward_id);
+        const { data: frameRewards } = await supabase.from("rewards").select().eq("type", "frame").in("id", ids);
+        if (frameRewards) setUnlockedFrames(frameRewards);
       }
     }
     fetchProfile();
@@ -60,6 +70,7 @@ export default function AvatarPage() {
       feet: feetId,
       weapon: weaponId,
       shield: shieldId,
+      active_frame: activeFrame,
     }).eq("id", user.id);
     router.push("/");
   }

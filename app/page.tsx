@@ -7,6 +7,7 @@ import LpcAvatar from "@/app/components/LpcAvatar";
 import Notes from "@/app/components/Notes";
 import Rewards from "@/app/components/Rewards";
 import { xpRequired } from "@/lib/xp";
+import FrameOverlay from "@/app/components/FrameOverlay";
 
 const STATS = [
   { key: "strength", label: "Strength", icon: "💪" },
@@ -54,23 +55,31 @@ export default async function Home() {
         {/* Venstre side - Avatar + Stats */}
         <div className="w-80 flex-shrink-0 flex flex-col gap-4">
           {/* Avatar placeholder */}
-          <Link href="/avatar" className="bg-[var(--card-bg)] border-2 border-[var(--gold-dark)] rounded-lg p-2 flex items-center justify-center hover:border-[var(--gold)] transition-colors cursor-pointer">
-            <LpcAvatar
-              skin={profile.skin_color || "light"}
-              hair={profile.hair_color || "halfmessy_orange"}
-              head={profile.helmet || "none"}
-              back={profile.cape || "none"}
-              torso={profile.chest || profile.shirt_color || "cardigan_brown"}
-              legs={profile.legs || "none"}
-              feet={profile.feet || "none"}
-              weapon={profile.weapon || "none"}
-              shield={profile.shield || "none"}
-              size={200}
-            />
+          <Link href="/avatar" className="flex items-center justify-center cursor-pointer">
+            <div style={{ position: "relative", width: 200, height: 200 }}>
+              <div style={{ position: "absolute", top: 0, left: 0, width: 200, height: 200, background: "var(--card-bg)", borderRadius: "4px" }} />
+              <LpcAvatar
+                skin={profile.skin_color || "light"}
+                hair={profile.hair_color || "halfmessy_orange"}
+                head={profile.helmet || "none"}
+                back={profile.cape || "none"}
+                torso={profile.chest || profile.shirt_color || "cardigan_brown"}
+                legs={profile.legs || "none"}
+                feet={profile.feet || "none"}
+                weapon={profile.weapon || "none"}
+                shield={profile.shield || "none"}
+                size={200}
+              />
+              {profile.active_frame && profile.active_frame !== "none" && (
+                <div style={{ position: "absolute", top: -20, left: -30, width: 300, height: 240 }}>
+                  <FrameOverlay src={`/frames/${profile.active_frame}.png`} size={240} />
+                </div>
+              )}
+            </div>
           </Link>
 
           {/* Stats */}
-          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-3">
+          <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-3 mt-6">
             <h2 className="font-bold text-sm text-[var(--gold)] mb-3">Stats</h2>
             <div className="flex flex-col gap-2">
               {STATS.map((stat) => (
