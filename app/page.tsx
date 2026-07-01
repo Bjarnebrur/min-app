@@ -117,7 +117,7 @@ export default async function Home() {
             </div>
             <Link href="/rewards" className="text-[var(--gold)] text-xs hover:underline block text-center bg-[var(--card-bg)] border border-[var(--card-border)] border-t-0 rounded-b-lg p-2">Vis alle rewards →</Link>
           </div>
-          <div className="rounded-lg p-4 flex-1 min-h-48 max-h-96 border border-[var(--gold-dark)]" style={{ backgroundImage: "url('/Parchment.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
+          <div className="rounded-lg p-5 flex flex-col" style={{ backgroundImage: "url('/parchment.png')", backgroundSize: "150%", backgroundPosition: "center", height: "320px", overflow: "hidden" }}>
             <Notes />
           </div>
         </div>
